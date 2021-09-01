@@ -1,0 +1,195 @@
+import java.util.Scanner;
+
+class Main {
+  public static void main(String[] args) {
+    //Cria uma matriz 3x3 que representa o tabuleiro do jogo
+    char[][] tabuleiro = new char[3][3];
+
+    //Insere caracteres nos espaços da matriz
+    for(int i = 0; i < 3; i++) {
+      for(int j = 0; j < 3; j++) {
+          tabuleiro[i][j] = '-';
+      }
+    }
+
+    //Inicializa a variável do teclado
+    Scanner teclado = new Scanner(System.in);
+
+    
+    System.out.println("Jogo da Velha");
+    System.out.println("-------------");
+    System.out.println("Escolha o modo de jogo através das opções");
+    System.out.println("-------------");
+    System.out.println("[1] J1 x J2");
+    System.out.println("[2] J1 x PC");
+    int modo = teclado.nextInt();    
+
+    /*Apresenta o título e modos de jogo
+    System.out.println("Jogo da Velha");
+    System.out.println("-------------");
+    System.out.println("Qual é seu nome, P1?");
+    String p1 = teclado.nextLine();
+    System.out.println("Qual é seu nome, P2?");
+    String p2 = teclado.nextLine();
+    */
+
+    //De acordo com a opção selecionada, captura as informações necessárias
+
+    if(modo == 1) {
+      System.out.println("Você escolheu o modo J1 x J2");
+      System.out.println("Digite o nome do J1");
+      teclado.nextLine(); //Apenas para subtrair o /n que o nextInt do modo criou
+      String p1 = teclado.nextLine();
+      System.out.println("Digite o nome do J2");
+      String p2 = teclado.nextLine();
+    } else if(modo == 2) {
+      System.out.println("Você escolheu o modo J1 x PC");
+      System.out.println("Digite o seu nome");
+      String p1 = teclado.nextLine();
+    } else {
+      System.out.println("Digite um modo de jogo válido");
+    }
+    
+    //Cria uma var booleana pra identificar se é a vez do J1 ou J2
+    boolean jogada1 = true;
+
+    //Cria uma var booleana pra identificar se o jogo terminou
+    boolean fimDeJogo = false;
+    while(fimDeJogo == false) {
+
+      //Desenha o tabuleiro
+      preencheTabuleiro(tabuleiro);
+
+      //Informa de quem é a vez
+      if(jogada1) {
+        System.out.println("É a sua vez, P1!  Você joga com 'x'");
+      } else {
+        System.out.println("É a sua vez, P2!  Você joga com 'o'");
+      }
+
+      //Cria uma var que armazena 'x' ou 'y' de acordo com o jogador
+      char simbolo = '-';
+      if(jogada1) {
+        simbolo = 'x';
+      } else {
+        simbolo = 'o';
+      }
+
+      //Cria as variáveis de linha e coluna de acordo com o tabuleiro
+      int linha = 0;
+      int coluna = 0;
+
+      //Só avança se o usuário digitar uma opção válida
+      while(true) {
+
+        //Pede que o usuário informe a posição onde deseja marcar seu símbolo
+        System.out.println("Informe a linha desejada (1, 2 ou 3): ");
+        linha = teclado.nextInt() - 1;
+        System.out.println("Informe a coluna desejada");
+        coluna = teclado.nextInt() - 1;
+
+        //Verifica se a posição no tabuleiro é válida
+        if(linha < 0 || coluna < 0 || linha > 2 || coluna > 2) {
+          System.out.println("A posição informada não é válida. Tente novamente!");
+
+        //Verifica se a posição informada está preenchida ou não
+        } else if(tabuleiro[linha][coluna] != '-') {
+            System.out.println("A posição informada já está preenchida. Tente novamente!");
+
+        //Senão, a posição é válida e saímos desse loop
+        } else { 
+            break;
+        }
+
+        }
+
+        //Definir a posição no tabuleiro na linha e coluna especificadas, na variável simbolo
+        tabuleiro[linha][coluna] = simbolo;
+
+        //Verifica se algum jogador venceu a partida
+        if(jogadorVenceu(tabuleiro) == 'x') {
+          System.out.println("P1 Venceu!");
+          fimDeJogo = true;
+        } else if(jogadorVenceu(tabuleiro) == 'o') {
+          System.out.println("P2 Venceu!");
+          fimDeJogo = true;
+        } else {
+
+          //Se nenhum jogador tiver vencido, verificar se o tabuleiro está totalmente preenchido, e declarar empate
+
+          if(tabuleiroCheio(tabuleiro)) {
+            System.out.println("O jogo terminou empatado!");
+            fimDeJogo = true;
+          } else {
+
+            //Alterna a rodada dos jogadores
+            jogada1 = !jogada1;
+          }
+
+        }
+
+      }
+
+      //Preenche o tabuleiro, até o jogo terminar
+      preencheTabuleiro(tabuleiro);
+  }
+
+  //Função que preenche o tabuleiro
+  public static void preencheTabuleiro(char[][] tabuleiro) {
+    System.out.println("Tabuleiro:");
+    for(int i = 0; i < 3; i++) {
+      //Loop para preencher as linhas do tabuleiro
+      for(int j = 0; j < 3; j++) {
+        System.out.print(tabuleiro[i][j]);
+      }
+      //Linha de comando apenas para separar as linhas do tabuleiro
+      System.out.println();
+
+    }
+  }
+  
+  //Função para verificar se algum dos jogadores venceu
+  public static char jogadorVenceu(char[][] tabuleiro) {
+
+    //Verifica cada linha
+    for(int i = 0; i < 3; i++){
+      if(tabuleiro[i][0] == tabuleiro[i][1] && tabuleiro[i][1] == tabuleiro[i][2] && tabuleiro[i][0] != '-') {
+        return tabuleiro[i][0];
+      }
+    }
+
+    //Verifica cada coluna
+    for(int j = 0; j < 3; j++) {
+      if(tabuleiro[0][j] == tabuleiro[1][j] && tabuleiro[1][j] == tabuleiro[2][j] && tabuleiro[0][j] != '-') {
+        return tabuleiro[0][j];
+      }
+    }
+
+    //Verifica as diagonais
+    if(tabuleiro[0][0] == tabuleiro[1][1] && tabuleiro[1][1] == tabuleiro[2][2] && tabuleiro[0][0] != '-') {
+      return tabuleiro[0][0];
+    }
+    if(tabuleiro[2][0] == tabuleiro[1][1] && tabuleiro[1][1] == tabuleiro[0][2] && tabuleiro [2][2] != '-') {
+      return tabuleiro[2][0];
+    }
+
+    //Se ninguém venceu...
+    return ' ';
+
+  }
+
+  //Função que verifica se todas as posições do tabuleiro já foram preenchidas
+  public static boolean tabuleiroCheio(char[][] tabuleiro) {
+    for(int i = 0; i < 3; i++) {
+      for(int j = 0; j < 3; j++) {
+        if(tabuleiro[i][j] == '-') {
+          return false;
+        }
+      }
+    }
+    return true;
+
+  }
+
+}
+
